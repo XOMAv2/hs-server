@@ -1,0 +1,12 @@
+{:hs-server.core/db
+ {:options {}}
+
+ :hs-server.core/app
+ {:options {:service-uri ""}
+  :db #ig/ref :hs-server.core/db}
+
+ :hs-server.core/server
+ {:options {:host "0.0.0.0"
+            :port #env "PORT"
+            :join? false}
+  :app #ig/ref :hs-server.core/app}}
