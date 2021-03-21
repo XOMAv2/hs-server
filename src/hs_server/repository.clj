@@ -3,7 +3,7 @@
             [next.jdbc.date-time] ; Для приведения java.util.Date в тип данных SQL.
             [next.jdbc.sql :as sql]
             [next.jdbc.result-set :as rs]
-            [hs-server.specs :as ss]
+            [hs-common.specs :as ss]
             [camel-snake-kebab.core :as csk]
             [hs-server.helpers :as help]))
 
@@ -12,7 +12,7 @@
 (def ^:private opts {:builder-fn rs/as-unqualified-kebab-maps
                      :return-keys true})
 
-(def ^:private user-form-keys (help/spec->keys ::ss/user-form))
+(def ^:private user-form-keys (set (help/spec->keys ::ss/user-form)))
 
 (def ^:private user-form-map (help/spec->map ::ss/user-form))
 

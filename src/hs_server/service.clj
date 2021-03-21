@@ -1,5 +1,5 @@
 (ns hs-server.service
-  (:require [hs-server.specs :as ss]
+  (:require [hs-common.specs :as ss]
             [hs-server.helpers :as help]
             [hs-server.repository :as repo]))
 
