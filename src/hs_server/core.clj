@@ -6,13 +6,15 @@
             [ring.middleware.json :as ring]
             [camel-snake-kebab.core :as csk]
             [hs-server.router :refer [router]]
-            [signal.handler :refer [with-handler]])
+            [signal.handler :refer [with-handler]]
+            [clojure.tools.logging :as log])
   (:gen-class))
 
 ; TODO: подумать об идемпотентности компонентов.
 ; TODO: pool соединений.
 ; TODO: опциональный компонент для создания таблицы и загрузки данных по умполчанию.
 ; TODO: логирование.
+; TODO: спеки для словарей options для компонентов.
 
 ; Система и функции для работы с ней.
 (defonce ^:private system nil)
@@ -71,24 +73,27 @@
 (defn -main
   "I don't do a whole lot ... yet."
   [& args]
-  (let [flag-map {"-h" "config.heroku.edn"
-                  "-d" "config.dev.edn"}]
-    (if-let [config-path (flag-map (first args))]
-      (try (if-let [config (help/load-config config-path)]
+  (let [flag-map {"-h" {:profile :heroku}
+                  "-d" {:profile :dev}}]
+    (if-let [profile (flag-map (first args))]
+      (try (if-let [config (help/load-config "config.edn" profile)]
              (try (system-start config)
-                  (with-handler :term
-                    (println "Получен сигнал SIGTERM. Выключение компонентов...")
-                    (system-stop)
-                    (println "Все компоненты выключены. Конец.")
-                    (System/exit 0))
+                  (let [exit (fn [signame]
+                               (log/info (str "A " signame " was received. Halting components..."))
+                               (system-stop)
+                               (log/info "All components are halted.")
+                               (System/exit 0))]
+                    (with-handler :int (exit "SIGINT"))
+                    #_(with-handler :kill (exit "SIGKILL"))
+                    (with-handler :term (exit "SIGTERM")))
                   (catch Exception _
-                    (do (print "Ошибка при запуске системы.")
-                        (System/exit -3))))
+                    (log/fatal "Error at system startup.")
+                    (System/exit -3)))
              (throw (Exception.)))
            (catch Exception _
-             (do (print "Не удалось загрузить файл конфигурации.")
-                 (System/exit -2))))
-      (do (print "Отсутствует ключ, указывающий на конфигурацию запуска.")
+             (log/fatal "Failed to load the configuration file.")
+             (System/exit -2)))
+      (do (log/fatal "Missing startup configuration key")
           (System/exit -1)))))
 
 #_(-main "-d")

@@ -5,22 +5,18 @@
             [clojure.string]
             [clojure.set]
             [clojure.walk :refer [postwalk]]
+            [aero.core :as aero]
             [expound.alpha :as ex]))
 
-(defn tag-env-reader
-  "Функция для загрузки переменной окружения."
-  [varname]
-  (cond
-    (string? varname) (System/getenv varname)
-    (or (symbol? varname)
-        (keyword? varname)) (System/getenv (name varname))
-    :else (throw (IllegalArgumentException. "Тип аргумента varname не поддерживается."))))
+(defmethod aero/reader 'ig/ref
+  [_ _ value]
+  (ig/ref value))
 
 (defn load-config
-  "Загрузка файла конфигурации из edn-файла с поддержкой тегов #ig/ref и #env."
-  [filename]
-  (ig/read-string {:readers {'env tag-env-reader}}
-                  (slurp filename)))
+  "Загрузка файла конфигурации из edn-файла с поддержкой тега #ig/ref и тегами, определёнными в
+   библиотеке aero."
+  [filename opts]
+  (aero/read-config filename opts))
 
 (defn create-table-ddl
   "table-name - имя таблицы (строка или ключевое слово).
