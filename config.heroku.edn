@@ -1,8 +1,14 @@
 {:hs-server.core/db
- {:options {}}
+ {:options {:dbtype "postgresql"
+            :dbname "d1f4qmuf6tnjce"
+            :host "ec2-54-220-35-19.eu-west-1.compute.amazonaws.com"
+            :port 5432
+            :user "ggccartlwsramb"
+            :password "3b1323537a8bd053a0f8f0da8a5998c1aead01e22332afefd2d69ffd8099d65f"
+            :uri "postgres://ggccartlwsramb:3b1323537a8bd053a0f8f0da8a5998c1aead01e22332afefd2d69ffd8099d65f@ec2-54-220-35-19.eu-west-1.compute.amazonaws.com:5432/d1f4qmuf6tnjce"}}
 
  :hs-server.core/app
- {:options {:service-uri ""}
+ {:options {:service-uri "https://hs-tt-server.herokuapp.com/"}
   :db #ig/ref :hs-server.core/db}
 
  :hs-server.core/server

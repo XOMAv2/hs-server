@@ -1,0 +1,22 @@
+name: Build project
+on: [ push ]
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Service
+        working-directory: .
+        run: lein uberjar
+
+      - name: Deploy Service
+        working-directory: .
+        env:
+          HEROKU_API_KEY: b74cd257-882f-4f56-ac85-26e14df908b6
+          APP_NAME: hs-tt-server
+        run: |
+          docker login --username=_ --password=$HEROKU_API_KEY registry.heroku.com
+          heroku container:push web -a $APP_NAME
+          heroku container:release web -a $APP_NAME
