@@ -4,6 +4,7 @@
             [integrant.core :as ig]
             [hs-server.middlewares :as md]
             [ring.middleware.json :as ring]
+            [ring.middleware.cors :refer [wrap-cors]]
             [camel-snake-kebab.core :as csk]
             [hs-server.router :refer [router]]
             [signal.handler :refer [with-handler]]
@@ -39,7 +40,9 @@
       (ring/wrap-json-response)
       (md/key->request :components {:db db :options options})
       (md/format-body-keys :phase :pre :format-fn csk/->kebab-case)
-      (ring/wrap-json-body {:keywords? true})))
+      (ring/wrap-json-body {:keywords? true})
+      (wrap-cors :access-control-allow-origin [#".*"]
+                 :access-control-allow-methods [:get :post :delete :patch])))
 
 ; Компонент сервера.
 (defmethod ig/init-key ::server

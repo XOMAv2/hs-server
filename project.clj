@@ -14,6 +14,7 @@
                  [integrant "0.8.0"] ; Либа для создания компонентов.
                  [spootnik/signal "0.2.4"] ; Либа для обработки сигналов.
                  [aero "1.1.6"] ; Либа для чтения edn-конфигов с тегами.
+                 [ring-cors "0.1.13"]
                  [compojure "1.6.2"]]
   :main ^:skip-aot hs-server.core
   :target-path "target/%s"
