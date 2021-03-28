@@ -2,6 +2,7 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [hs-server.helpers :as help]
             [integrant.core :as ig]
+            [hs-server.specs :as ss]
             [hs-server.middlewares :as md]
             [ring.middleware.json :as ring]
             [ring.middleware.cors :refer [wrap-cors]]
@@ -15,7 +16,6 @@
 ; TODO: pool соединений.
 ; TODO: опциональный компонент для создания таблицы и загрузки данных по умполчанию.
 ; TODO: логирование.
-; TODO: спеки для словарей options для компонентов.
 
 ; Система и функции для работы с ней.
 (defonce ^:private system nil)
@@ -27,11 +27,19 @@
   (alter-var-root #'system ig/halt!))
 
 ; Компонент БД.
+(defmethod ig/pre-init-spec ::db
+  [_]
+  ::ss/db)
+
 (defmethod ig/init-key ::db
   [_ {:keys [options]}]
   options) ; Здесь неплохо было бы создавать пул соединений.
 
 ; Компонент приложения (обёрнутый раутер).
+(defmethod ig/pre-init-spec ::app
+  [_]
+  ::ss/app)
+
 (defmethod ig/init-key ::app
   [_ {:keys [options db]}]
   (-> router
@@ -45,6 +53,10 @@
                  :access-control-allow-methods [:get :post :delete :patch])))
 
 ; Компонент сервера.
+(defmethod ig/pre-init-spec ::server
+  [_]
+  ::ss/server)
+
 (defmethod ig/init-key ::server
   [_ {:keys [options app]}]
   (run-jetty app options))
@@ -53,28 +65,25 @@
   [_ server]
   (.stop server))
 
-#_(
-(def cols
-  ["id int primary key generated always as identity"
-   "fullname text not null"
-   "sex char(1) not null"
-   "birthday date not null"
-   "address text not null"
-   "policy_number text not null"])
+;; (def cols
+;;   ["id int primary key generated always as identity"
+;;    "fullname text not null"
+;;    "sex char(1) not null"
+;;    "birthday date not null"
+;;    "address text not null"
+;;    "policy_number text not null"])
 
-(defn make-table
-  "Создание таблицы users с колонками cols."
-  []
-  (let [db (-> "config.edn"
-               (help/file->clj)
-               (:db-spec))]
-    (help/create-table db :users cols)))
-  
-     (make-table)
-   )
+;; (defn make-table
+;;   "Создание таблицы users с колонками cols."
+;;   []
+;;   (let [db (-> "config.edn"
+;;                (help/file->clj)
+;;                (:db-spec))]
+;;     (help/create-table db :users cols)))
+
+;; (make-table)
 
 (defn -main
-  "I don't do a whole lot ... yet."
   [& args]
   (let [flag-map {"-h" {:profile :heroku}
                   "-d" {:profile :dev}}]
@@ -99,4 +108,6 @@
       (do (log/fatal "Missing startup configuration key")
           (System/exit -1)))))
 
+#_(system-start (help/load-config "config.edn" {:profile :dev}))
+#_(system-stop)
 #_(-main "-d")
