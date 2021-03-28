@@ -16,7 +16,7 @@
  :hs-server.core/app
  {:db       #ig/ref  :hs-server.core/db
   :options  #profile {:dev    {:service-uri "http://127.0.0.1:5555"}
-                      :heroku [:service-uri "https://hs-tt-server.herokuapp.com/"]}}
+                      :heroku {:service-uri "https://hs-tt-server.herokuapp.com/"}}}
 
  :hs-server.core/server
  {:app     #ig/ref  :hs-server.core/app

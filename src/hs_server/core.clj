@@ -2,7 +2,7 @@
   (:require [ring.adapter.jetty :refer [run-jetty]]
             [hs-server.helpers :as help]
             [integrant.core :as ig]
-            [hs-server.specs :as ss]
+            [hs-server.specs]
             [hs-server.middlewares :as md]
             [ring.middleware.json :as ring]
             [ring.middleware.cors :refer [wrap-cors]]
@@ -29,7 +29,7 @@
 ; Компонент БД.
 (defmethod ig/pre-init-spec ::db
   [_]
-  ::ss/db)
+  :hs-server.specs/db)
 
 (defmethod ig/init-key ::db
   [_ {:keys [options]}]
@@ -38,7 +38,7 @@
 ; Компонент приложения (обёрнутый раутер).
 (defmethod ig/pre-init-spec ::app
   [_]
-  ::ss/app)
+  :hs-server.specs/app)
 
 (defmethod ig/init-key ::app
   [_ {:keys [options db]}]
@@ -55,7 +55,7 @@
 ; Компонент сервера.
 (defmethod ig/pre-init-spec ::server
   [_]
-  ::ss/server)
+  :hs-server.specs/server)
 
 (defmethod ig/init-key ::server
   [_ {:keys [options app]}]
@@ -77,8 +77,9 @@
 ;;   "Создание таблицы users с колонками cols."
 ;;   []
 ;;   (let [db (-> "config.edn"
-;;                (help/file->clj)
-;;                (:db-spec))]
+;;                (help/load-config {:profile :dev})
+;;                (:hs-server.core/db)
+;;                (:options))]
 ;;     (help/create-table db :users cols)))
 
 ;; (make-table)
