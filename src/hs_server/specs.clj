@@ -1,6 +1,7 @@
 (ns hs-server.specs
   (:require [clojure.spec.alpha :as s]
-            [hs-common.specs :as ss]))
+            [hs-common.specs :as ss]
+            [next.jdbc.protocols :refer [Connectable]]))
 
 (s/def ::dbtype #{"postgresql"})
 (s/def ::dbname ::ss/non-empty-string)
@@ -27,3 +28,6 @@
                                         ::port
                                         ::join?]))
 (s/def ::server (s/keys :req-un [:server/options]))
+
+(s/def ::next-jdbc-db (s/or :config :db/options
+                            :connection #(satisfies? Connectable %)))

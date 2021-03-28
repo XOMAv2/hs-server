@@ -108,6 +108,8 @@
       (do (log/fatal "Missing startup configuration key")
           (System/exit -1)))))
 
+#_system
+#_(ig/prep (help/load-config "config.edn" {:profile :dev}))
 #_(system-start (help/load-config "config.edn" {:profile :dev}))
 #_(system-stop)
 #_(-main "-d")
