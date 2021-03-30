@@ -11,12 +11,19 @@
                               :port 5432
                               :user "ggccartlwsramb"
                               :password "3b1323537a8bd053a0f8f0da8a5998c1aead01e22332afefd2d69ffd8099d65f"
-                              :uri "postgres://ggccartlwsramb:3b1323537a8bd053a0f8f0da8a5998c1aead01e22332afefd2d69ffd8099d65f@ec2-54-220-35-19.eu-west-1.compute.amazonaws.com:5432/d1f4qmuf6tnjce"}}}
+                              :uri "postgres://ggccartlwsramb:3b1323537a8bd053a0f8f0da8a5998c1aead01e22332afefd2d69ffd8099d65f@ec2-54-220-35-19.eu-west-1.compute.amazonaws.com:5432/d1f4qmuf6tnjce"}
+                     :test   {:dbtype "postgresql"
+                              :dbname "hs-test"
+                              :host "localhost"
+                              :port 5432
+                              :user "postgres"
+                              :password "123"}}}
 
  :hs-server.core/app
  {:db       #ig/ref  :hs-server.core/db
   :options  #profile {:dev    {:service-uri "http://127.0.0.1:5555"}
-                      :heroku {:service-uri "https://hs-tt-server.herokuapp.com/"}}}
+                      :heroku {:service-uri "https://hs-tt-server.herokuapp.com/"}
+                      :test   {:service-uri "https://"}}}
 
  :hs-server.core/server
  {:app     #ig/ref  :hs-server.core/app
@@ -25,4 +32,7 @@
                               :join? false}
                      :heroku {:host "0.0.0.0"
                               :port #long #env "PORT"
+                              :join? false}
+                     :test   {:host "127.0.0.1"
+                              :port 6666
                               :join? false}}}}
